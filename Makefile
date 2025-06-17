@@ -65,6 +65,11 @@ clean: ## Clean build artifacts
 	rm -f coverage.out coverage.html
 	@echo "✅ Clean complete!"
 
+# Run simple example
+example-simple: ## Run the simple example
+	@echo "🚀 Running simple example..."
+	cd examples/simple && go run main.go
+
 # Run basic example
 example-basic: ## Run the basic example
 	@echo "🚀 Running basic example..."

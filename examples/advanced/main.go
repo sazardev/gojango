@@ -26,7 +26,9 @@ func main() {
 	app := gojango.New()
 	
 	// Migrar modelos
-	app.AutoMigrate(&User{})
+	if err := app.AutoMigrate(&User{}); err != nil {
+		log.Fatalf("Migration failed: %v", err)
+	}
 	
 	// Ejemplos de QuerySet (estilo Django ORM)
 	demonstrateQuerySet(app)
@@ -110,7 +112,7 @@ func demonstrateQuerySet(app *gojango.App) {
 	}
 	
 	for _, user := range users {
-		if err := app.db.Create(user); err != nil {
+		if err := app.GetDB().Create(user); err != nil {
 			log.Printf("Error creating user: %v", err)
 		}
 	}

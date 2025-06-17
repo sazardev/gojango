@@ -24,20 +24,25 @@ type QuerySet struct {
 }
 
 // NewQuerySet creates a new QuerySet for a model
-func (app *App) NewQuerySet(model interface{}) *QuerySet {
+func NewQuerySet(db *database.DB, model interface{}) *QuerySet {
 	modelType := reflect.TypeOf(model)
 	if modelType.Kind() == reflect.Ptr {
 		modelType = modelType.Elem()
 	}
 	
 	qs := &QuerySet{
-		db:        app.db,
+		db:        db,
 		model:     model,
 		modelType: modelType,
-		tableName: app.db.GetTableName(model),
+		tableName: db.GetTableName(model),
 	}
 	
 	return qs
+}
+
+// NewQuerySet creates a new QuerySet for a model (deprecated - use app.NewQuerySet)
+func (app *App) NewQuerySet(model interface{}) *QuerySet {
+	return NewQuerySet(app.db, model)
 }
 
 // Filter adds WHERE conditions (Django-like)
@@ -160,13 +165,13 @@ func (qs *QuerySet) Offset(offset int) *QuerySet {
 func (qs *QuerySet) All() (interface{}, error) {
 	sql := qs.buildSQL()
 	
-	rows, err := qs.db.conn.Query(sql, qs.args...)
+	rows, err := qs.db.Conn.Query(sql, qs.args...)
 	if err != nil {
 		return nil, fmt.Errorf("query failed: %v", err)
 	}
 	defer rows.Close()
 	
-	return qs.db.scanRows(rows, qs.model)
+	return qs.db.ScanRows(rows, qs.model)
 }
 
 // First returns the first result
@@ -195,7 +200,7 @@ func (qs *QuerySet) Count() (int, error) {
 	}
 	
 	var count int
-	err := qs.db.conn.QueryRow(sql, qs.args...).Scan(&count)
+	err := qs.db.Conn.QueryRow(sql, qs.args...).Scan(&count)
 	return count, err
 }
 
@@ -249,7 +254,7 @@ func (qs *QuerySet) Update(data map[string]interface{}) error {
 		args = append(args, qs.args...)
 	}
 	
-	_, err := qs.db.conn.Exec(sql, args...)
+	_, err := qs.db.Conn.Exec(sql, args...)
 	return err
 }
 
@@ -261,7 +266,7 @@ func (qs *QuerySet) Delete() error {
 		sql += " WHERE " + strings.Join(qs.where, " AND ")
 	}
 	
-	_, err := qs.db.conn.Exec(sql, qs.args...)
+	_, err := qs.db.Conn.Exec(sql, qs.args...)
 	return err
 }
 

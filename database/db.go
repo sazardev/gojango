@@ -45,7 +45,7 @@ func Connect(databaseURL string) (*DB, error) {
 	}
 	
 	return &DB{
-		conn:   conn,
+		Conn:   conn,
 		driver: driver,
 	}, nil
 }
@@ -96,7 +96,7 @@ func (db *DB) AutoMigrate(model interface{}) error {
 	createSQL := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (\n  %s\n)", 
 		tableName, strings.Join(columns, ",\n  "))
 	
-	_, err := db.conn.Exec(createSQL)
+	_, err := db.Conn.Exec(createSQL)
 	if err != nil {
 		return fmt.Errorf("failed to create table %s: %v", tableName, err)
 	}
@@ -246,7 +246,7 @@ func (db *DB) Create(model interface{}) error {
 	insertSQL := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)",
 		tableName, strings.Join(columns, ", "), strings.Join(placeholders, ", "))
 	
-	result, err := db.conn.Exec(insertSQL, values...)
+	result, err := db.Conn.Exec(insertSQL, values...)
 	if err != nil {
 		return fmt.Errorf("failed to insert record: %v", err)
 	}
@@ -264,7 +264,7 @@ func (db *DB) FindAll(model interface{}) (interface{}, error) {
 	tableName := db.getTableName(model)
 	
 	selectSQL := fmt.Sprintf("SELECT * FROM %s", tableName)
-	rows, err := db.conn.Query(selectSQL)
+	rows, err := db.Conn.Query(selectSQL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query records: %v", err)
 	}
@@ -278,7 +278,7 @@ func (db *DB) FindByID(model interface{}, id string) error {
 	tableName := db.getTableName(model)
 	
 	selectSQL := fmt.Sprintf("SELECT * FROM %s WHERE id = ?", tableName)
-	row := db.conn.QueryRow(selectSQL, id)
+	row := db.Conn.QueryRow(selectSQL, id)
 	
 	return db.scanRow(row, model)
 }
@@ -335,7 +335,7 @@ func (db *DB) Update(model interface{}, id string) error {
 	updateSQL := fmt.Sprintf("UPDATE %s SET %s WHERE id = ?",
 		tableName, strings.Join(setParts, ", "))
 	
-	_, err := db.conn.Exec(updateSQL, values...)
+	_, err := db.Conn.Exec(updateSQL, values...)
 	if err != nil {
 		return fmt.Errorf("failed to update record: %v", err)
 	}
@@ -348,7 +348,7 @@ func (db *DB) Delete(model interface{}, id string) error {
 	tableName := db.getTableName(model)
 	
 	deleteSQL := fmt.Sprintf("DELETE FROM %s WHERE id = ?", tableName)
-	_, err := db.conn.Exec(deleteSQL, id)
+	_, err := db.Conn.Exec(deleteSQL, id)
 	if err != nil {
 		return fmt.Errorf("failed to delete record: %v", err)
 	}
@@ -387,6 +387,11 @@ func (db *DB) setIDField(model interface{}, id int64) {
 			break
 		}
 	}
+}
+
+// ScanRows scans multiple rows into a slice of models (exported for external use)
+func (db *DB) ScanRows(rows *sql.Rows, model interface{}) (interface{}, error) {
+	return db.scanRows(rows, model)
 }
 
 // scanRows scans multiple rows into a slice of models
@@ -489,5 +494,5 @@ func (db *DB) scanRowIntoModel(rows *sql.Rows, columns []string, model interface
 
 // Close closes the database connection
 func (db *DB) Close() error {
-	return db.conn.Close()
+	return db.Conn.Close()
 }

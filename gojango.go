@@ -10,7 +10,6 @@ import (
 
 	"gojango/config"
 	"gojango/database"
-	"gojango/models"
 	"gojango/router"
 	"gojango/templates"
 )
@@ -189,6 +188,16 @@ func (app *App) RegisterCRUD(basePath string, model interface{}) {
 		
 		return c.JSON(map[string]string{"message": "Deleted successfully"})
 	})
+}
+
+// GetDB returns the database instance (for advanced usage)
+func (app *App) GetDB() *database.DB {
+	return app.db
+}
+
+// NewQuerySet creates a new QuerySet for the given model
+func (app *App) NewQuerySet(model interface{}) *QuerySet {
+	return NewQuerySet(app.db, model)
 }
 
 // Run starts the HTTP server

@@ -1,25 +1,25 @@
 # GoJango 🐍🐹
 
-Un framework web para Go inspirado en Django con baterías incluidas. Diseñado para ser **ultra fácil de usar**, **opinionado** y con **mínimas dependencias**.
+A Django-inspired web framework for Go with batteries included. Designed to be **ultra easy to use**, **opinionated**, and with **minimal dependencies**.
 
-## 🌟 Características
+## 🌟 Features
 
-- 🚀 **Ultra fácil de usar** - Sintaxis similar a Django
-- 🔋 **Baterías incluidas** - ORM, Router, Templates, CRUD automático, Middleware
-- 🏗️ **Arquitectura limpia** - Modular con inyección de dependencias
-- 📝 **Opinionado** - Convenciones sobre configuración (Convention over Configuration)
-- 🎯 **Mínimas dependencias** - Solo SQLite como dependencia externa
-- 🔍 **QuerySet estilo Django** - ORM intuitivo con filtros y consultas complejas
-- 🛡️ **Middleware integrado** - CORS, Logging, Recovery, Auth, Rate Limiting
-- 🌐 **Rutas flexibles** - Grupos de rutas, parámetros, middleware específico
+- 🚀 **Ultra easy to use** - Django-like syntax
+- 🔋 **Batteries included** - ORM, Router, Templates, Auto CRUD, Middleware
+- 🏗️ **Clean architecture** - Modular with dependency injection
+- 📝 **Opinionated** - Convention over configuration
+- 🎯 **Minimal dependencies** - Only SQLite as external dependency
+- 🔍 **Django-style QuerySet** - Intuitive ORM with filters and complex queries
+- 🛡️ **Built-in middleware** - CORS, Logging, Recovery, Auth, Rate Limiting
+- 🌐 **Flexible routing** - Route groups, parameters, specific middleware
 
-## 📦 Instalación
+## 📦 Installation
 
 ```bash
-go get github.com/tu-usuario/gojango
+go get github.com/your-username/gojango
 ```
 
-## 🚀 Inicio rápido
+## 🚀 Quick Start
 
 ```go
 package main
@@ -29,7 +29,7 @@ import (
     "gojango/models"
 )
 
-// Define tu modelo (como Django models.py)
+// Define your model (like Django models.py)
 type User struct {
     models.Model
     Name  string `json:"name" db:"name,not_null,size:100"`
@@ -42,34 +42,34 @@ func (u *User) TableName() string {
 }
 
 func main() {
-    // Configuración automática
+    // Automatic configuration
     app := gojango.New()
     
-    // Auto-migración (como Django migrate)
+    // Auto-migration (like Django migrate)
     app.AutoMigrate(&User{})
     
-    // CRUD automático (como Django admin)
+    // Automatic CRUD (like Django admin)
     app.RegisterCRUD("/api/users", &User{})
     
-    // Rutas custom (como Django URLs)
+    // Custom routes (like Django URLs)
     app.GET("/", func(c *gojango.Context) error {
-        return c.JSON(map[string]string{"message": "¡Hola GoJango!"})
+        return c.JSON(map[string]string{"message": "Hello GoJango!"})
     })
     
-    // Servidor
+    // Start server
     app.Run(":8000")
 }
 ```
 
-## 🎯 Conceptos clave
+## 🎯 Key Concepts
 
-### 1. Modelos (Models)
+### 1. Models
 
-Similares a Django models, con tags para configuración de base de datos:
+Similar to Django models, with tags for database configuration:
 
 ```go
 type User struct {
-    models.Model  // ID, CreatedAt, UpdatedAt automáticos
+    models.Model  // Automatic ID, CreatedAt, UpdatedAt
     Name     string `json:"name" db:"name,not_null,size:100"`
     Email    string `json:"email" db:"email,unique,not_null,size:255"`
     Password string `json:"-" db:"password,not_null,size:255"`
@@ -82,79 +82,79 @@ func (u *User) TableName() string {
 }
 ```
 
-**Tags de base de datos disponibles:**
-- `not_null` - Campo obligatorio
-- `unique` - Valor único
-- `primary_key` - Clave primaria
-- `auto_increment` - Auto incremento
-- `size:N` - Tamaño máximo
-- `default:valor` - Valor por defecto
-- `type:TIPO` - Tipo específico de BD
+**Available database tags:**
+- `not_null` - Required field
+- `unique` - Unique value
+- `primary_key` - Primary key
+- `auto_increment` - Auto increment
+- `size:N` - Maximum size
+- `default:value` - Default value
+- `type:TYPE` - Specific DB type
 
-### 2. QuerySet (ORM estilo Django)
+### 2. QuerySet (Django-style ORM)
 
-Consultas intuitivas y encadenables:
+Intuitive and chainable queries:
 
 ```go
 qs := app.NewQuerySet(&User{})
 
-// Filtros básicos
+// Basic filters
 users, _ := qs.Filter("active", true).All()
 
-// Filtros avanzados (Django-style lookups)
-users, _ := qs.Filter("name__icontains", "juan").All()       // LIKE %juan%
+// Advanced filters (Django-style lookups)
+users, _ := qs.Filter("name__icontains", "john").All()       // LIKE %john%
 users, _ := qs.Filter("age__gte", 18).All()                  // age >= 18
 users, _ := qs.Filter("email__endswith", "@gmail.com").All() // email LIKE %@gmail.com
 
-// Ordenamiento
+// Ordering
 users, _ := qs.OrderBy("name").All()     // ASC
 users, _ := qs.OrderBy("-created_at").All() // DESC
 
-// Paginación
+// Pagination
 users, _ := qs.Limit(10).Offset(20).All()
 
-// Combinaciones
+// Combinations
 adults, _ := qs.Filter("active", true).
                Filter("age__gte", 18).
                OrderBy("-age").
                Limit(5).All()
 
-// Operaciones útiles
+// Useful operations
 count, _ := qs.Filter("active", true).Count()
-exists, _ := qs.Filter("email", "juan@example.com").Exists()
+exists, _ := qs.Filter("email", "john@example.com").Exists()
 first, _ := qs.OrderBy("created_at").First()
 
-// Actualizaciones masivas
+// Bulk updates
 qs.Filter("active", false).Update(map[string]interface{}{
     "active": true,
 })
 
-// Eliminaciones masivas
+// Bulk deletions
 qs.Filter("age__lt", 18).Delete()
 ```
 
-**Lookups disponibles:**
-- `exact` - Igualdad exacta (por defecto)
-- `iexact` - Igualdad sin case sensitive
-- `contains` - Contiene (LIKE %valor%)
-- `icontains` - Contiene sin case sensitive
-- `startswith` - Comienza con
-- `endswith` - Termina con
-- `gt`, `gte` - Mayor que, mayor o igual
-- `lt`, `lte` - Menor que, menor o igual
-- `in` - En una lista de valores
-- `isnull` - Es NULL o no es NULL
+**Available lookups:**
+- `exact` - Exact equality (default)
+- `iexact` - Case-insensitive equality
+- `contains` - Contains (LIKE %value%)
+- `icontains` - Case-insensitive contains
+- `startswith` - Starts with
+- `endswith` - Ends with
+- `gt`, `gte` - Greater than, greater or equal
+- `lt`, `lte` - Less than, less or equal
+- `in` - In a list of values
+- `isnull` - Is NULL or not NULL
 
-### 3. Rutas y Controladores
+### 3. Routes and Controllers
 
 ```go
-// Rutas básicas
+// Basic routes
 app.GET("/users", listUsers)
 app.POST("/users", createUser)
 app.PUT("/users/:id", updateUser)
 app.DELETE("/users/:id", deleteUser)
 
-// Grupos de rutas con middleware
+// Route groups with middleware
 api := app.Group("/api")
 api.Use(middleware.CORS("*"))
 api.GET("/users", listUsers)
@@ -163,23 +163,23 @@ admin := app.Group("/admin")
 admin.Use(middleware.BasicAuth("admin", "secret"))
 admin.GET("/dashboard", adminDashboard)
 
-// CRUD automático
+// Automatic CRUD
 app.RegisterCRUD("/api/users", &User{})
-// Genera automáticamente:
-// GET    /api/users     (listar)
-// POST   /api/users     (crear)
-// GET    /api/users/:id (obtener)
-// PUT    /api/users/:id (actualizar) 
-// DELETE /api/users/:id (eliminar)
+// Automatically generates:
+// GET    /api/users     (list)
+// POST   /api/users     (create)
+// GET    /api/users/:id (get)
+// PUT    /api/users/:id (update) 
+// DELETE /api/users/:id (delete)
 ```
 
 ### 4. Context (Request/Response)
 
-API rica para manejar requests y responses:
+Rich API for handling requests and responses:
 
 ```go
 func handler(c *gojango.Context) error {
-    // Parámetros de URL
+    // URL parameters
     id := c.Param("id")
     idInt, _ := c.ParamInt("id")
     
@@ -214,12 +214,12 @@ func handler(c *gojango.Context) error {
 
 ### 5. Middleware
 
-Middleware integrado y fácil de usar:
+Built-in and easy-to-use middleware:
 
 ```go
 import "gojango/middleware"
 
-// Middleware global
+// Global middleware
 app.Use(func(c *gojango.Context) error {
     return middleware.Logger()(c)
 })
@@ -230,32 +230,32 @@ app.Use(func(c *gojango.Context) error {
     return middleware.Recovery()(c)
 })
 
-// Middleware específico
+// Specific middleware
 admin := app.Group("/admin")
 admin.Use(func(c *gojango.Context) error {
     return middleware.BasicAuth("admin", "secret")(c)
 })
 
-// Middleware custom
+// Custom middleware
 app.Use(func(c *gojango.Context) error {
     log.Printf("Request: %s %s", c.Method(), c.Path())
     return nil
 })
 ```
 
-**Middleware incluido:**
-- `Logger()` - Log de requests
-- `CORS(origin)` - Headers CORS
-- `Recovery()` - Recuperación de panics
-- `BasicAuth(user, pass)` - Autenticación básica
-- `RequestID()` - ID único por request
-- `RateLimit(req, window)` - Limitación de requests
-- `Security()` - Headers de seguridad
+**Built-in middleware:**
+- `Logger()` - Request logging
+- `CORS(origin)` - CORS headers
+- `Recovery()` - Panic recovery
+- `BasicAuth(user, pass)` - Basic authentication
+- `RequestID()` - Unique request ID
+- `RateLimit(req, window)` - Request rate limiting
+- `Security()` - Security headers
 
-## 📁 Estructura de proyecto recomendada
+## 📁 Recommended project structure
 
 ```
-mi-proyecto/
+my-project/
 ├── main.go
 ├── models/
 │   ├── user.go
@@ -274,71 +274,71 @@ mi-proyecto/
 └── go.mod
 ```
 
-## 🔧 Configuración
+## 🔧 Configuration
 
 ```go
-// Configuración por defecto
+// Default configuration
 app := gojango.New()
 
-// Configuración custom
+// Custom configuration
 config := config.New()
-config.DatabaseURL = "sqlite://./mi-app.db"
+config.DatabaseURL = "sqlite://./my-app.db"
 config.Debug = true
-config.Set("app.name", "Mi App")
+config.Set("app.name", "My App")
 
 app := gojango.New(gojango.WithConfig(config))
 
-// Variables de entorno
-config.LoadFromEnv("MYAPP_") // Carga vars que empiecen con MYAPP_
+// Environment variables
+config.LoadFromEnv("MYAPP_") // Load vars starting with MYAPP_
 
-// Uso de configuración
+// Using configuration
 appName := app.config.GetString("app.name", "Default App")
 debug := app.config.GetBool("debug", false)
 ```
 
-## 🗄️ Base de datos
+## 🗄️ Database
 
-Por defecto usa SQLite, perfecto para desarrollo y aplicaciones pequeñas:
+Uses SQLite by default, perfect for development and small applications:
 
 ```go
-// SQLite en memoria (por defecto)
+// SQLite in memory (default)
 app := gojango.New()
 
-// SQLite en archivo
+// SQLite file
 app.config.DatabaseURL = "sqlite://./app.db"
 
-// Auto-migración
+// Auto-migration
 app.AutoMigrate(&User{}, &Post{}, &Comment{})
 ```
 
 ## 🎨 Templates
 
-Sistema de templates integrado con funciones helper:
+Built-in template system with helper functions:
 
 ```go
-// Configurar directorio de templates
+// Configure templates directory
 app.templates.SetBaseDir("templates")
 app.templates.LoadTemplates()
 
-// Render en handler
+// Render in handler
 func homePage(c *gojango.Context) error {
     data := map[string]interface{}{
-        "title": "Mi App",
+        "title": "My App",
         "users": users,
     }
     return c.Render("home.html", data)
 }
 ```
 
-**Funciones helper disponibles:**
-- `upper`, `lower`, `title` - Manipulación de strings
-- `add`, `sub`, `mul`, `div` - Operaciones matemáticas
-- `eq`, `ne`, `lt`, `gt` - Comparaciones
-- `default` - Valores por defecto
+**Available helper functions:**
+- `upper`, `lower`, `title` - String manipulation
+- `add`, `sub`, `mul`, `div` - Math operations
+- `eq`, `ne`, `lt`, `gt` - Comparisons
+- `default` - Default values
 
-## 📚 Ejemplos
+## 📚 Examples
 
-### API REST completa
+### Complete REST API
 
 ```go
 package main
@@ -365,7 +365,7 @@ func main() {
     app.Use(func(c *gojango.Context) error { return middleware.Logger()(c) })
     app.Use(func(c *gojango.Context) error { return middleware.CORS("*")(c) })
     
-    // Migración
+    // Migration
     app.AutoMigrate(&User{})
     
     // API routes
@@ -392,7 +392,7 @@ func searchUsers(c *gojango.Context) error {
 }
 ```
 
-### Aplicación web con templates
+### Web application with templates
 
 ```go
 func main() {
@@ -411,7 +411,7 @@ func main() {
 
 func homePage(c *gojango.Context) error {
     return c.Render("home.html", map[string]interface{}{
-        "title": "Bienvenido a GoJango",
+        "title": "Welcome to GoJango",
     })
 }
 
@@ -420,75 +420,75 @@ func usersPage(c *gojango.Context) error {
     users, _ := qs.Filter("active", true).OrderBy("name").All()
     
     return c.Render("users.html", map[string]interface{}{
-        "title": "Usuarios",
+        "title": "Users",
         "users": users,
     })
 }
 ```
 
-## 🤝 Comparación con Django
+## 🤝 Comparison with Django
 
-| Característica | Django | GoJango |
-|---------------|--------|---------|
-| Modelos | `models.Model` | `models.Model` |
+| Feature | Django | GoJango |
+|---------|--------|---------|
+| Models | `models.Model` | `models.Model` |
 | ORM | `User.objects.filter()` | `qs.Filter()` |
 | URLs | `urlpatterns` | `app.GET()` |
 | Views | Functions/Classes | `HandlerFunc` |
 | Templates | Jinja-like | Go templates |
-| Admin | Automático | `RegisterCRUD()` |
-| Middleware | Lista en settings | `app.Use()` |
+| Admin | Automatic | `RegisterCRUD()` |
+| Middleware | List in settings | `app.Use()` |
 | Migrations | `migrate` | `AutoMigrate()` |
 
-## 📖 Documentación completa
+## 📖 Complete documentation
 
-- [Guía de inicio](./docs/getting-started.md)
-- [Modelos y ORM](./docs/models.md)
-- [Rutas y controladores](./docs/routing.md)
+- [Getting started guide](./docs/getting-started.md)
+- [Models and ORM](./docs/models.md)
+- [Routes and controllers](./docs/routing.md)
 - [Middleware](./docs/middleware.md)
 - [Templates](./docs/templates.md)
-- [Configuración](./docs/config.md)
-- [Ejemplos](./examples/)
+- [Configuration](./docs/config.md)
+- [Examples](./examples/)
 
-## 🤔 ¿Por qué GoJango?
+## 🤔 Why GoJango?
 
-### ✅ Ventajas
+### ✅ Advantages
 
-- **Familiaridad**: Si conoces Django, te sentirás como en casa
-- **Productividad**: CRUD automático, migraciones, middleware integrado
-- **Simplicidad**: Una sola dependencia externa (SQLite)
-- **Performance**: La velocidad de Go con la comodidad de Django
-- **Tipado**: Seguridad de tipos de Go
-- **Deploy**: Binario único, fácil deployment
+- **Familiarity**: If you know Django, you'll feel at home
+- **Productivity**: Auto CRUD, migrations, built-in middleware
+- **Simplicity**: Single external dependency (SQLite)
+- **Performance**: Go's speed with Django's comfort
+- **Type safety**: Go's type safety
+- **Deploy**: Single binary, easy deployment
 
-### 🎯 Ideal para
+### 🎯 Ideal for
 
-- Desarrolladores que vienen de Django/Python
-- APIs REST rápidas
-- Aplicaciones web pequeñas a medianas
-- Prototipos y MVPs
-- Microservicios
-- Aplicaciones que necesitan deployment sencillo
+- Developers coming from Django/Python
+- Fast REST APIs
+- Small to medium web applications
+- Prototypes and MVPs
+- Microservices
+- Applications that need simple deployment
 
-## 🚀 Empezar ahora
+## 🚀 Get started now
 
-1. **Instala Go** (1.22+)
-2. **Crea un nuevo proyecto**:
+1. **Install Go** (1.22+)
+2. **Create a new project**:
    ```bash
-   mkdir mi-app && cd mi-app
-   go mod init mi-app
-   go get github.com/tu-usuario/gojango
+   mkdir my-app && cd my-app
+   go mod init my-app
+   go get github.com/your-username/gojango
    ```
-3. **Crea `main.go`** con el ejemplo de inicio rápido
-4. **Ejecuta**: `go run main.go`
-5. **Visita**: `http://localhost:8000`
+3. **Create `main.go`** with the quick start example
+4. **Run**: `go run main.go`
+5. **Visit**: `http://localhost:8000`
 
-## 📄 Licencia
+## 📄 License
 
-MIT License - ve [LICENSE](LICENSE) para detalles.
+MIT License - see [LICENSE](LICENSE) for details.
 
-## 🤝 Contribuir
+## 🤝 Contributing
 
-¡Las contribuciones son bienvenidas! Ve [CONTRIBUTING.md](CONTRIBUTING.md) para más detalles.
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ---
 

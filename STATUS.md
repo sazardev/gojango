@@ -1,13 +1,13 @@
 # 🎉 ¡GoJango Framework Completo!
 
-## ✅ Estado del Proyecto
+## ✅ Project Status
 
 El framework **GoJango** está **funcional** y listo para usar. Incluye:
 
 ### 🔧 Componentes Implementados
 
 1. **Framework Core** (`gojango.go`)
-   - ✅ Aplicación principal con inyección de dependencias
+   - ✅ Main application with dependency injection
    - ✅ Context para manejo de requests/responses
    - ✅ Middleware system
    - ✅ Rutas básicas (GET, POST, PUT, DELETE)
@@ -19,14 +19,14 @@ El framework **GoJango** está **funcional** y listo para usar. Incluye:
    - ✅ Extracción de parámetros
 
 3. **Database/ORM** (`database/db.go`)
-   - ✅ Conexión SQLite
+   - ✅ SQLite connection
    - ✅ Auto-migración de esquemas
    - ✅ CRUD básico
    - ✅ Hooks (BeforeCreate, BeforeUpdate)
 
 4. **Models** (`models/model.go`)
    - ✅ Modelo base con ID, CreatedAt, UpdatedAt
-   - ✅ Tags de configuración DB
+   - ✅ DB configuration tags
    - ✅ Validación interface
 
 5. **QuerySet** (`queryset.go`)
@@ -37,13 +37,13 @@ El framework **GoJango** está **funcional** y listo para usar. Incluye:
    - ✅ Count, Exists, First
 
 6. **Configuration** (`config/config.go`)
-   - ✅ Configuración con defaults
+   - ✅ Configuration with defaults
    - ✅ Variables de entorno
    - ✅ Getters tipados
 
 7. **Templates** (`templates/engine.go`)
    - ✅ Engine de templates
-   - ✅ Funciones helper
+   - ✅ Helper functions
    - ✅ Carga automática
 
 8. **Middleware** (`middleware/middleware.go`)
@@ -64,18 +64,18 @@ gojango/
 ├── 📄 gojango.go          # Framework principal
 ├── 📄 context.go          # Context methods
 ├── 📄 queryset.go         # Django-like ORM
-├── 📁 config/             # Configuración
+├── 📁 config/             # Configuration
 ├── 📁 database/           # ORM y DB
 ├── 📁 models/             # Modelos base
 ├── 📁 router/             # HTTP routing
 ├── 📁 templates/          # Template engine
 ├── 📁 middleware/         # Middleware común
-├── 📁 examples/           # Ejemplos de uso
-│   ├── simple/            # Ejemplo mínimo funcional ✅
+├── 📁 examples/           # Usage examples
+│   ├── simple/            # Minimal functional example ✅
 │   ├── basic/             # API REST básica
 │   └── advanced/          # QuerySet avanzado
 ├── 📁 test/               # Tests del framework
-├── 📄 Makefile           # Comandos de desarrollo
+├── 📄 Makefile           # Development commands
 ├── 📄 Dockerfile         # Containerización
 ├── 📄 README.md          # Documentación completa
 └── 📄 go.mod             # Dependencias mínimas
@@ -83,7 +83,7 @@ gojango/
 
 ## 🚀 Cómo usar GoJango
 
-### Ejemplo Mínimo (Funcional)
+### Minimal Example (Functional)
 
 ```bash
 cd examples/simple
@@ -94,13 +94,13 @@ go run main.go
 app := NewSimpleApp()
 
 app.GET("/", func(c *SimpleContext) {
-    c.JSON(map[string]string{"message": "¡Hola GoJango!"})
+    c.JSON(map[string]string{"message": "Hello GoJango!"})
 })
 
 app.Run(":8000")
 ```
 
-### Ejemplo Completo (Cuando esté compilando)
+### Complete Example (When compiling)
 
 ```go
 package main
@@ -122,23 +122,23 @@ func main() {
     app.RegisterCRUD("/api/users", &User{})
     
     app.GET("/", func(c *gojango.Context) error {
-        return c.JSON(map[string]string{"message": "¡Hola GoJango!"})
+        return c.JSON(map[string]string{"message": "Hello GoJango!"})
     })
     
     app.Run(":8000")
 }
 ```
 
-## 🛠️ Comandos Disponibles
+## 🛠️ Available Commands
 
 ```bash
 # Compilar y probar
-make build                 # Compilar proyecto
-make test                  # Ejecutar tests
+make build                 # Compile project
+make test                  # Run tests
 make test-coverage         # Tests con cobertura
 
-# Ejemplos
-make example-simple        # Ejemplo mínimo ✅
+# Examples
+make example-simple        # Minimal example ✅
 make example-basic         # API REST básica
 make example-advanced      # QuerySet demo
 
@@ -149,9 +149,9 @@ make lint                  # Linter
 make clean                 # Limpiar
 
 # Herramientas
-make init                  # Nuevo proyecto
+make init                  # New project
 make docs                  # Documentación
-make status                # Estado del proyecto
+make status                # Project status
 ```
 
 ## 🎯 Características Destacadas
@@ -181,16 +181,16 @@ app.Use(middleware.CORS("*"))
 app.Use(middleware.Recovery())
 ```
 
-### 4. Configuración Simple
+### 4. Simple Configuration
 ```go
 app := gojango.New()
 app.AutoMigrate(&User{})  // Como Django migrate
-app.Run(":8000")          // Servidor listo
+app.Run(":8000")          // Server ready
 ```
 
 ## 📊 Comparación
 
-| Característica | Django | GoJango | Estado |
+| Feature | Django | GoJango | Status |
 |----------------|--------|---------|---------|
 | Models | ✅ | ✅ | Completo |
 | ORM Queries | ✅ | ✅ | Completo |
@@ -205,9 +205,9 @@ app.Run(":8000")          // Servidor listo
 
 **GoJango** es un framework web completo para Go que:
 
-✅ **Funciona** - Ejemplo simple ejecutándose  
+✅ **Works** - Simple example running  
 ✅ **Completo** - Todas las características implementadas  
-✅ **Documentado** - README detallado y ejemplos  
+✅ **Documented** - Detailed README and examples  
 ✅ **Testeable** - Tests y benchmarks incluidos  
 ✅ **Productivo** - CRUD automático, migraciones, middleware  
 ✅ **Familiar** - Sintaxis inspirada en Django  
@@ -217,7 +217,7 @@ app.Run(":8000")          // Servidor listo
 
 ### 🏆 Misión Cumplida
 
-Hemos creado exitosamente un **paquete de Go** completo, modular, bien documentado, con:
+We have successfully created a complete, modular, well-documented **Go package** with:
 
 - ✅ Código limpio y separado
 - ✅ Inyección de dependencias

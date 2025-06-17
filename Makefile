@@ -97,8 +97,8 @@ init: ## Initialize a new GoJango project
 	@read -p "Enter project name: " name; \
 	mkdir -p $$name/{models,handlers,middleware,templates,static/{css,js}}; \
 	cd $$name && go mod init $$name; \
-	echo "module $$name\n\ngo 1.22\n\nrequire (\n\tgithub.com/tu-usuario/gojango v0.1.0\n)" > go.mod; \
-	echo 'package main\n\nimport (\n\t"gojango"\n\t"gojango/models"\n)\n\ntype User struct {\n\tmodels.Model\n\tName  string `json:"name" db:"name,not_null"`\n\tEmail string `json:"email" db:"email,unique,not_null"`\n}\n\nfunc (u *User) TableName() string {\n\treturn "users"\n}\n\nfunc main() {\n\tapp := gojango.New()\n\tapp.AutoMigrate(&User{})\n\tapp.RegisterCRUD("/api/users", &User{})\n\tapp.GET("/", func(c *gojango.Context) error {\n\t\treturn c.JSON(map[string]string{"message": "¡Hola GoJango!"})\n\t})\n\tapp.Run(":8000")\n}' > main.go; \
+	echo "module $$name\n\ngo 1.22\n\nrequire (\n\tgithub.com/your-username/gojango v0.1.0\n)" > go.mod; \
+	echo 'package main\n\nimport (\n\t"gojango"\n\t"gojango/models"\n)\n\ntype User struct {\n\tmodels.Model\n\tName  string `json:"name" db:"name,not_null"`\n\tEmail string `json:"email" db:"email,unique,not_null"`\n}\n\nfunc (u *User) TableName() string {\n\treturn "users"\n}\n\nfunc main() {\n\tapp := gojango.New()\n\tapp.AutoMigrate(&User{})\n\tapp.RegisterCRUD("/api/users", &User{})\n\tapp.GET("/", func(c *gojango.Context) error {\n\t\treturn c.JSON(map[string]string{"message": "Hello GoJango!"})\n\t})\n\tapp.Run(":8000")\n}' > main.go; \
 	echo "✅ Project '$$name' created! Run 'cd $$name && make run' to start."
 
 # Run the project

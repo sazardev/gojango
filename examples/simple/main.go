@@ -59,7 +59,7 @@ func main() {
 	// Basic routes
 	app.GET("/", func(c *SimpleContext) {
 		c.JSON(map[string]interface{}{
-			"message":   "¡Hola GoJango! 🐍🐹",
+			"message":   "Hello GoJango! 🐍🐹",
 			"timestamp": time.Now().Format(time.RFC3339),
 			"status":    "working",
 		})
@@ -75,7 +75,7 @@ func main() {
 	app.GET("/hello/{name}", func(c *SimpleContext) {
 		name := c.r.PathValue("name")
 		c.JSON(map[string]string{
-			"message": fmt.Sprintf("¡Hola %s desde GoJango!", name),
+			"message": fmt.Sprintf("Hello %s from GoJango!", name),
 		})
 	})
 
@@ -85,7 +85,7 @@ func main() {
 	log.Println("   GET /hello/{name}")
 	log.Println("")
 	log.Println("🎯 Try: curl http://localhost:8000/")
-	log.Println("🎯 Try: curl http://localhost:8000/hello/Juan")
+	log.Println("🎯 Try: curl http://localhost:8000/hello/John")
 
 	if err := app.Run(":8000"); err != nil {
 		log.Fatalf("Server failed: %v", err)

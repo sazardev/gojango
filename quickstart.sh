@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # GoJango Quick Start Script
-# Este script ayuda a los usuarios a empezar rápidamente con GoJango
+# This script helps users get started quickly with GoJango
 
 set -e
 
@@ -18,28 +18,28 @@ fi
 echo "✅ Go encontrado: $(go version)"
 echo ""
 
-# Crear nuevo proyecto
-read -p "📝 Nombre del proyecto: " PROJECT_NAME
+# Create new project
+read -p "📝 Project name: " PROJECT_NAME
 
 if [ -z "$PROJECT_NAME" ]; then
-    echo "❌ Nombre de proyecto requerido"
+    echo "❌ Project name required"
     exit 1
 fi
 
 if [ -d "$PROJECT_NAME" ]; then
-    echo "❌ El directorio '$PROJECT_NAME' ya existe"
+    echo "❌ Directory '$PROJECT_NAME' already exists"
     exit 1
 fi
 
 echo ""
-echo "🚀 Creando proyecto '$PROJECT_NAME'..."
+echo "🚀 Creating project '$PROJECT_NAME'..."
 
-# Crear estructura de directorios
+# Create directory structure
 mkdir -p "$PROJECT_NAME"/{models,handlers,middleware,templates,static/{css,js}}
 
 cd "$PROJECT_NAME"
 
-# Crear go.mod
+# Create go.mod
 cat > go.mod << EOF
 module $PROJECT_NAME
 
@@ -50,7 +50,7 @@ require (
 )
 EOF
 
-# Crear main.go básico
+# Create basic main.go
 cat > main.go << 'EOF'
 package main
 
@@ -134,7 +134,7 @@ func main() {
 			name = "Anonymous"
 		}
 		c.JSON(map[string]string{
-			"message": fmt.Sprintf("¡Hola %s! 👋", name),
+			"message": fmt.Sprintf("Hello %s! 👋", name),
 			"time":    time.Now().Format("15:04:05"),
 		})
 	})
@@ -155,13 +155,13 @@ func main() {
 }
 EOF
 
-# Crear README del proyecto
+# Create project README
 cat > README.md << EOF
 # $PROJECT_NAME
 
-Aplicación web creada con GoJango 🐍🐹
+Web application created with GoJango 🐍🐹
 
-## Ejecutar
+## Run
 
 \`\`\`bash
 go run main.go
@@ -175,7 +175,7 @@ Luego visita: http://localhost:8000
 # Instalar dependencias
 go mod tidy
 
-# Ejecutar
+# Run
 go run main.go
 
 # Compilar
@@ -195,20 +195,20 @@ go test
 
 \`\`\`
 $PROJECT_NAME/
-├── main.go           # Aplicación principal
-├── models/           # Modelos de datos
+├── main.go           # Main application
+├── models/           # Data models
 ├── handlers/         # Controladores
 ├── middleware/       # Middleware custom
 ├── templates/        # Templates HTML
 ├── static/           # Assets estáticos
-└── README.md        # Este archivo
+└── README.md        # This file
 \`\`\`
 
 ---
-Creado con ❤️ usando GoJango
+Created with ❤️ using GoJango
 EOF
 
-# Crear .gitignore
+# Create .gitignore
 cat > .gitignore << 'EOF'
 # Binarios
 *.exe
@@ -245,7 +245,7 @@ Thumbs.db
 EOF
 
 echo ""
-echo "✅ Proyecto '$PROJECT_NAME' creado exitosamente!"
+echo "✅ Project '$PROJECT_NAME' created successfully!"
 echo ""
 echo "🎯 Próximos pasos:"
 echo "   cd $PROJECT_NAME"

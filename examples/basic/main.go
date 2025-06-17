@@ -8,7 +8,7 @@ import (
 	"gojango/models"
 )
 
-// User model - similar a Django models
+// User model - similar to Django models
 type User struct {
 	models.Model
 	Name     string `json:"name" db:"name,not_null,size:100"`
@@ -17,7 +17,7 @@ type User struct {
 	Active   bool   `json:"active" db:"active,default:true"`
 }
 
-// TableName define el nombre de la tabla (como en Django)
+// TableName defines the table name (like in Django)
 func (u *User) TableName() string {
 	return "users"
 }
@@ -35,18 +35,18 @@ func (p *Post) TableName() string {
 }
 
 func main() {
-	// Crear aplicación con configuración automática
+	// Create application with automatic configuration
 	app := gojango.New()
 
-	// Configurar base de datos (SQLite por defecto)
+	// Configure database (SQLite by default)
 	app.config.DatabaseURL = "sqlite://./app.db"
 
-	// Reconectar con la nueva URL
+	// Auto-migration (like Django migrate)
 	if err := app.AutoMigrate(&User{}, &Post{}); err != nil {
 		log.Fatalf("Migration failed: %v", err)
 	}
 
-	// Middleware global (como Django middleware)
+	// Global middleware (like Django middleware)
 	app.Use(func(c *gojango.Context) error {
 		return middleware.Logger()(c)
 	})
@@ -57,19 +57,19 @@ func main() {
 		return middleware.Recovery()(c)
 	})
 
-	// CRUD automático (como Django admin)
+	// Automatic CRUD (like Django admin)
 	app.RegisterCRUD("/api/users", &User{})
 	app.RegisterCRUD("/api/posts", &Post{})
 
-	// Rutas personalizadas (como Django URLs)
+	// Custom routes (like Django URLs)
 	app.GET("/", homeHandler)
 	app.GET("/api/health", healthHandler)
 	app.POST("/api/login", loginHandler)
 	app.GET("/api/users/:id/posts", userPostsHandler)
 
-	// Rutas con middleware específico (temporal - sin grupos por ahora)
+	// Routes with specific middleware (temporary - without groups for now)
 	app.GET("/admin/dashboard", func(c *gojango.Context) error {
-		// Aquí aplicarías middleware manualmente si fuera necesario
+		// Here you would apply middleware manually if needed
 		return adminDashboardHandler(c)
 	})
 
@@ -89,18 +89,18 @@ func main() {
 	log.Println("   PUT    /api/posts/:id (CRUD)")
 	log.Println("   DELETE /api/posts/:id (CRUD)")
 
-	// Iniciar servidor
+	// Start server
 	if err := app.Run(":8000"); err != nil {
 		log.Fatalf("Server failed to start: %v", err)
 	}
 }
 
-// Handlers - simples y limpios como Django views
+// Handlers - simple and clean like Django views
 func homeHandler(c *gojango.Context) error {
 	return c.JSON(map[string]interface{}{
-		"message": "¡Bienvenido a GoJango! 🐍🐹",
+		"message": "Welcome to GoJango! 🐍🐹",
 		"version": "1.0.0",
-		"docs":    "https://github.com/tu-usuario/gojango",
+		"docs":    "https://github.com/your-username/gojango",
 	})
 }
 
@@ -121,13 +121,13 @@ func loginHandler(c *gojango.Context) error {
 		return c.ErrorJSON(400, "Invalid JSON", err)
 	}
 
-	// Aquí implementarías la lógica de autenticación
-	// Por simplicidad, aceptamos cualquier email/password
+	// Here you would implement authentication logic
+	// For simplicity, we accept any email/password
 	if loginData.Email == "" || loginData.Password == "" {
 		return c.ErrorJSON(400, "Email and password required", nil)
 	}
 
-	// Simular token JWT
+	// Simulate JWT token
 	token := "fake-jwt-token-" + loginData.Email
 
 	return c.JSON(map[string]interface{}{
@@ -144,19 +144,19 @@ func userPostsHandler(c *gojango.Context) error {
 		return c.ErrorJSON(400, "User ID is required", nil)
 	}
 
-	// Aquí harías la consulta real a la base de datos
-	// Por simplicidad, devolvemos datos mock
+	// Here you would do the actual database query
+	// For simplicity, we return mock data
 	posts := []map[string]interface{}{
 		{
 			"id":      1,
-			"title":   "Mi primer post",
-			"content": "Este es el contenido del post",
+			"title":   "My first post",
+			"content": "This is the post content",
 			"user_id": userID,
 		},
 		{
 			"id":      2,
-			"title":   "Segundo post",
-			"content": "Más contenido aquí",
+			"title":   "Second post",
+			"content": "More content here",
 			"user_id": userID,
 		},
 	}

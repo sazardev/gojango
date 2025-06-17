@@ -7,7 +7,7 @@ import (
 	"gojango/models"
 )
 
-// User model extendido
+// Extended User model
 type User struct {
 	models.Model
 	Name     string `json:"name" db:"name,not_null,size:100"`
@@ -22,7 +22,7 @@ func (u *User) TableName() string {
 }
 
 func main() {
-	// Crear aplicación
+	// Create application
 	app := gojango.New()
 	
 	// Migrar modelos
@@ -30,12 +30,12 @@ func main() {
 		log.Fatalf("Migration failed: %v", err)
 	}
 	
-	// Ejemplos de QuerySet (estilo Django ORM)
+	// QuerySet examples (Django ORM style)
 	demonstrateQuerySet(app)
 	
 	// Rutas con QuerySet
 	app.GET("/api/users/active", func(c *gojango.Context) error {
-		// Usuarios activos
+		// Active users
 		qs := app.NewQuerySet(&User{})
 		users, err := qs.Filter("active", true).All()
 		if err != nil {
@@ -50,7 +50,7 @@ func main() {
 			return c.ErrorJSON(400, "name parameter required", nil)
 		}
 		
-		// Buscar por nombre (case insensitive, contains)
+		// Search by name (case insensitive, contains)
 		qs := app.NewQuerySet(&User{})
 		users, err := qs.Filter("name__icontains", name).OrderBy("name").All()
 		if err != nil {
@@ -60,7 +60,7 @@ func main() {
 	})
 	
 	app.GET("/api/users/adults", func(c *gojango.Context) error {
-		// Usuarios mayores de edad
+		// Users of legal age
 		qs := app.NewQuerySet(&User{})
 		users, err := qs.Filter("age__gte", 18).OrderBy("-age").All()
 		if err != nil {
@@ -78,7 +78,7 @@ func main() {
 			return c.ErrorJSON(400, "Invalid JSON", err)
 		}
 		
-		// Activar múltiples usuarios
+		// Activate multiple users
 		qs := app.NewQuerySet(&User{})
 		err := qs.Filter("id__in", request.UserIDs).Update(map[string]interface{}{
 			"active": true,
@@ -103,12 +103,12 @@ func main() {
 func demonstrateQuerySet(app *gojango.App) {
 	log.Println("🔍 Demonstrating Django-like QuerySet operations...")
 	
-	// Crear algunos usuarios de ejemplo
+	// Create some example users
 	users := []*User{
-		{Name: "Juan Pérez", Email: "juan@example.com", Age: 25, Active: true},
-		{Name: "María García", Email: "maria@example.com", Age: 30, Active: true},
-		{Name: "Carlos López", Email: "carlos@example.com", Age: 17, Active: false},
-		{Name: "Ana Martín", Email: "ana@example.com", Age: 35, Active: true},
+		{Name: "John Doe", Email: "john@example.com", Age: 25, Active: true},
+		{Name: "Jane Smith", Email: "jane@example.com", Age: 30, Active: true},
+		{Name: "Bob Wilson", Email: "bob@example.com", Age: 17, Active: false},
+		{Name: "Alice Brown", Email: "alice@example.com", Age: 35, Active: true},
 	}
 	
 	for _, user := range users {
@@ -119,40 +119,40 @@ func demonstrateQuerySet(app *gojango.App) {
 	
 	qs := app.NewQuerySet(&User{})
 	
-	// 1. Filtrar usuarios activos
-	log.Println("\n1. Usuarios activos:")
+	// 1. Filter active users
+	log.Println("\n1. Active users:")
 	activeUsers, err := qs.Filter("active", true).All()
 	if err != nil {
 		log.Printf("Error: %v", err)
 	} else {
-		log.Printf("Encontrados: %v", activeUsers)
+		log.Printf("Found: %v", activeUsers)
 	}
 	
-	// 2. Buscar por nombre (contiene)
-	log.Println("\n2. Usuarios con 'ar' en el nombre:")
-	nameUsers, err := qs.Filter("name__icontains", "ar").All()
+	// 2. Search by name (contains)
+	log.Println("\n2. Users with 'o' in name:")
+	nameUsers, err := qs.Filter("name__icontains", "o").All()
 	if err != nil {
 		log.Printf("Error: %v", err)
 	} else {
-		log.Printf("Encontrados: %v", nameUsers)
+		log.Printf("Found: %v", nameUsers)
 	}
 	
-	// 3. Usuarios mayores de edad ordenados por edad descendente
-	log.Println("\n3. Usuarios adultos (age >= 18) ordenados por edad:")
+	// 3. Adult users ordered by age descending
+	log.Println("\n3. Adult users (age >= 18) ordered by age:")
 	adultUsers, err := qs.Filter("age__gte", 18).OrderBy("-age").All()
 	if err != nil {
 		log.Printf("Error: %v", err)
 	} else {
-		log.Printf("Encontrados: %v", adultUsers)
+		log.Printf("Found: %v", adultUsers)
 	}
 	
-	// 4. Contar usuarios activos
-	log.Println("\n4. Conteo de usuarios activos:")
+	// 4. Count active users
+	log.Println("\n4. Count of active users:")
 	count, err := qs.Filter("active", true).Count()
 	if err != nil {
 		log.Printf("Error: %v", err)
 	} else {
-		log.Printf("Total usuarios activos: %d", count)
+		log.Printf("Total active users: %d", count)
 	}
 	
 	// 5. Primer usuario por orden alfabético
@@ -164,13 +164,13 @@ func demonstrateQuerySet(app *gojango.App) {
 		log.Printf("Primer usuario: %v", firstUser)
 	}
 	
-	// 6. Verificar si existen usuarios menores de edad
-	log.Println("\n6. ¿Existen usuarios menores de edad?")
+	// 6. Check if underage users exist
+	log.Println("\n6. Do underage users exist?")
 	exists, err := qs.Filter("age__lt", 18).Exists()
 	if err != nil {
 		log.Printf("Error: %v", err)
 	} else {
-		log.Printf("Menores de edad: %t", exists)
+		log.Printf("Underage users: %t", exists)
 	}
 	
 	// 7. Actualizar usuarios inactivos
@@ -184,13 +184,13 @@ func demonstrateQuerySet(app *gojango.App) {
 		log.Println("Usuarios actualizados correctamente")
 	}
 	
-	// 8. Consulta compleja: usuarios activos con edad entre 20 y 35
-	log.Println("\n8. Usuarios activos entre 20 y 35 años:")
+	// 8. Complex query: active users aged between 20 and 35
+	log.Println("\n8. Active users between 20 and 35 years old:")
 	complexUsers, err := qs.Filter("active", true).Filter("age__gte", 20).Filter("age__lte", 35).OrderBy("age").All()
 	if err != nil {
 		log.Printf("Error: %v", err)
 	} else {
-		log.Printf("Encontrados: %v", complexUsers)
+		log.Printf("Found: %v", complexUsers)
 	}
 	
 	log.Println("\n✅ QuerySet demonstration completed!")

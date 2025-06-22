@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	"gojango"
-	"gojango/middleware"
-	"gojango/models"
+	"github.com/sazardev/gojango"
+	"github.com/sazardev/gojango/middleware"
+	"github.com/sazardev/gojango/models"
 )
 
 // User model - similar to Django models

@@ -8,10 +8,10 @@ import (
 	"net/http"
 	"reflect"
 
-	"gojango/config"
-	"gojango/database"
-	"gojango/router"
-	"gojango/templates"
+	"github.com/sazardev/gojango/config"
+	"github.com/sazardev/gojango/database"
+	"github.com/sazardev/gojango/router"
+	"github.com/sazardev/gojango/templates"
 )
 
 // App represents the main application instance

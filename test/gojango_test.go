@@ -8,8 +8,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"gojango"
-	"gojango/models"
+	"github.com/sazardev/gojango"
+	"github.com/sazardev/gojango/models"
 )
 
 // Test models

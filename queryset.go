@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"gojango/database"
+	"github.com/sazardev/gojango/database"
 )
 
 // QuerySet provides Django-like query capabilities

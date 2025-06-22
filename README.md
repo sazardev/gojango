@@ -16,7 +16,7 @@ A Django-inspired web framework for Go with batteries included. Designed to be *
 ## 📦 Installation
 
 ```bash
-go get github.com/your-username/gojango
+go get github.com/sazardev/gojango
 ```
 
 ## 🚀 Quick Start
@@ -476,7 +476,7 @@ func usersPage(c *gojango.Context) error {
    ```bash
    mkdir my-app && cd my-app
    go mod init my-app
-   go get github.com/your-username/gojango
+   go get github.com/sazardev/gojango
    ```
 3. **Create `main.go`** with the quick start example
 4. **Run**: `go run main.go`

@@ -104,7 +104,7 @@ func homeHandler(c *gojango.Context) error {
 	return c.JSON(map[string]interface{}{
 		"message": "Welcome to GoJango! 🐍🐹",
 		"version": "1.0.0",
-		"docs":    "https://github.com/your-username/gojango",
+		"docs":    "https://github.com/sazardev/gojango",
 	})
 }
 

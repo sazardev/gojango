@@ -1,4 +1,4 @@
-module gojango
+module github.com/sazardev/gojango
 
 go 1.22
 

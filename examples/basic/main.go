@@ -34,12 +34,16 @@ func (p *Post) TableName() string {
 	return "posts"
 }
 
-func main() {
-	// Create application with automatic configuration
+func main() { // Create application with automatic configuration
 	app := gojango.New()
 
 	// Configure database (SQLite by default)
-	app.config.DatabaseURL = "sqlite://./app.db"
+	app.GetConfig().DatabaseURL = "sqlite://./app.db"
+
+	// Initialize database connection
+	if err := app.InitDB(); err != nil {
+		log.Fatalf("Failed to initialize database: %v", err)
+	}
 
 	// Auto-migration (like Django migrate)
 	if err := app.AutoMigrate(&User{}, &Post{}); err != nil {

@@ -104,18 +104,18 @@ func (app *App) Use(middleware Middleware) {
 	app.middleware = append(app.middleware, middleware)
 }
 
-// AutoMigrate automatically creates/updates database tables for models
+// AutoMigrate runs database migrations for the given models
 func (app *App) AutoMigrate(models ...interface{}) error {
 	if app.db == nil {
-		return fmt.Errorf("database not configured")
+		return fmt.Errorf("database not initialized")
 	}
-	
+
 	for _, model := range models {
 		if err := app.db.AutoMigrate(model); err != nil {
 			return fmt.Errorf("failed to migrate %T: %v", model, err)
 		}
 	}
-	
+
 	return nil
 }
 
@@ -125,7 +125,7 @@ func (app *App) RegisterCRUD(basePath string, model interface{}) {
 	if modelType.Kind() == reflect.Ptr {
 		modelType = modelType.Elem()
 	}
-	
+
 	// List endpoint
 	app.GET(basePath, func(c *Context) error {
 		results, err := app.db.FindAll(model)
@@ -134,65 +134,102 @@ func (app *App) RegisterCRUD(basePath string, model interface{}) {
 		}
 		return c.JSON(results)
 	})
-	
+
 	// Create endpoint
 	app.POST(basePath, func(c *Context) error {
 		newModel := reflect.New(modelType).Interface()
 		if err := c.BindJSON(newModel); err != nil {
 			return c.ErrorJSON(400, "Invalid JSON", err)
 		}
-		
+
 		if err := app.db.Create(newModel); err != nil {
 			return c.ErrorJSON(500, "Database error", err)
 		}
-		
+
 		return c.JSON(newModel)
 	})
-	
+
 	// Get by ID endpoint
 	app.GET(basePath+"/:id", func(c *Context) error {
 		id := c.Param("id")
 		result := reflect.New(modelType).Interface()
-		
+
 		if err := app.db.FindByID(result, id); err != nil {
 			return c.ErrorJSON(404, "Not found", err)
 		}
-		
+
 		return c.JSON(result)
 	})
-	
+
 	// Update endpoint
 	app.PUT(basePath+"/:id", func(c *Context) error {
 		id := c.Param("id")
 		updateModel := reflect.New(modelType).Interface()
-		
+
 		if err := c.BindJSON(updateModel); err != nil {
 			return c.ErrorJSON(400, "Invalid JSON", err)
 		}
-		
+
 		if err := app.db.Update(updateModel, id); err != nil {
 			return c.ErrorJSON(500, "Database error", err)
 		}
-		
+
 		return c.JSON(updateModel)
 	})
-	
+
 	// Delete endpoint
 	app.DELETE(basePath+"/:id", func(c *Context) error {
 		id := c.Param("id")
 		deleteModel := reflect.New(modelType).Interface()
-		
+
 		if err := app.db.Delete(deleteModel, id); err != nil {
 			return c.ErrorJSON(500, "Database error", err)
 		}
-		
+
 		return c.JSON(map[string]string{"message": "Deleted successfully"})
 	})
+}
+
+// InitDB initializes the database connection using the current config
+func (app *App) InitDB() error {
+	if app.config.DatabaseURL == "" {
+		return fmt.Errorf("database URL not configured")
+	}
+
+	var err error
+
+	// Use mock database for testing
+	if app.config.DatabaseURL == "mock://" {
+		app.db, err = database.ConnectMock()
+	} else {
+		app.db, err = database.Connect(app.config.DatabaseURL)
+	}
+
+	if err != nil {
+		return fmt.Errorf("failed to connect to database: %v", err)
+	}
+
+	return nil
 }
 
 // GetDB returns the database instance (for advanced usage)
 func (app *App) GetDB() *database.DB {
 	return app.db
+}
+
+// GetConfig returns the configuration instance
+func (app *App) GetConfig() *config.Config {
+	return app.config
+}
+
+// GetRouter returns the router instance (for testing)
+func (app *App) GetRouter() *router.Router {
+	return app.router
+}
+
+// GetTemplates returns the template engine instance
+func (app *App) GetTemplates() *templates.Engine {
+	return app.templates
 }
 
 // NewQuerySet creates a new QuerySet for the given model
@@ -205,7 +242,7 @@ func (app *App) Run(addr string) error {
 	if addr == "" {
 		addr = app.config.GetString("server.port", ":8000")
 	}
-	
+
 	log.Printf("🚀 GoJango server starting on %s", addr)
 	return http.ListenAndServe(addr, app.router)
 }
@@ -219,7 +256,7 @@ func (app *App) wrapHandler(handler HandlerFunc) http.HandlerFunc {
 			Params:   make(map[string]string),
 			app:      app,
 		}
-		
+
 		// Extract route parameters from header (set by router)
 		if paramHeader := r.Header.Get("X-Route-Params"); paramHeader != "" {
 			r.Header.Del("X-Route-Params") // Clean up
@@ -227,7 +264,7 @@ func (app *App) wrapHandler(handler HandlerFunc) http.HandlerFunc {
 				ctx.Params[k] = v
 			}
 		}
-		
+
 		// Execute middleware chain
 		for _, middleware := range app.middleware {
 			if err := middleware(ctx); err != nil {
@@ -235,7 +272,7 @@ func (app *App) wrapHandler(handler HandlerFunc) http.HandlerFunc {
 				return
 			}
 		}
-		
+
 		// Execute handler
 		if err := handler(ctx); err != nil {
 			ctx.ErrorJSON(500, "Handler error", err)
@@ -301,7 +338,7 @@ func (rg *RouteGroup) wrapWithGroupMiddleware(handler HandlerFunc) HandlerFunc {
 				return err
 			}
 		}
-		
+
 		// Then execute the handler
 		return handler(c)
 	}

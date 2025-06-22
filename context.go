@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"net/http"
 	"strconv"
 	"strings"
 )
@@ -19,16 +18,16 @@ func (c *Context) JSON(data interface{}) error {
 func (c *Context) ErrorJSON(status int, message string, err error) error {
 	c.Response.Header().Set("Content-Type", "application/json")
 	c.Response.WriteHeader(status)
-	
+
 	errorResponse := map[string]interface{}{
-		"error":   message,
-		"status":  status,
+		"error":  message,
+		"status": status,
 	}
-	
+
 	if err != nil {
 		errorResponse["details"] = err.Error()
 	}
-	
+
 	return json.NewEncoder(c.Response).Encode(errorResponse)
 }
 
@@ -37,10 +36,10 @@ func (c *Context) BindJSON(v interface{}) error {
 	if c.Request.Header.Get("Content-Type") != "application/json" {
 		return fmt.Errorf("content-type must be application/json")
 	}
-	
+
 	decoder := json.NewDecoder(c.Request.Body)
 	defer c.Request.Body.Close()
-	
+
 	return decoder.Decode(v)
 }
 
@@ -50,7 +49,7 @@ func (c *Context) Param(name string) string {
 	if val, exists := c.Params[name]; exists {
 		return val
 	}
-	
+
 	// Extract from URL path (simple implementation)
 	// This would be set by the router when matching routes
 	return c.Request.URL.Query().Get(name)
@@ -62,7 +61,7 @@ func (c *Context) ParamInt(name string) (int, error) {
 	if val == "" {
 		return 0, fmt.Errorf("parameter %s not found", name)
 	}
-	
+
 	return strconv.Atoi(val)
 }
 
@@ -77,7 +76,7 @@ func (c *Context) QueryInt(name string) (int, error) {
 	if val == "" {
 		return 0, fmt.Errorf("query parameter %s not found", name)
 	}
-	
+
 	return strconv.Atoi(val)
 }
 
@@ -105,7 +104,7 @@ func (c *Context) Render(templateName string, data interface{}) error {
 	if c.app.templates == nil {
 		return fmt.Errorf("template engine not configured")
 	}
-	
+
 	return c.app.templates.Render(c.Response, templateName, data)
 }
 
@@ -156,11 +155,11 @@ func (c *Context) ClientIP() string {
 	if ip := c.GetHeader("X-Forwarded-For"); ip != "" {
 		return strings.Split(ip, ",")[0]
 	}
-	
+
 	if ip := c.GetHeader("X-Real-IP"); ip != "" {
 		return ip
 	}
-	
+
 	return c.Request.RemoteAddr
 }
 
